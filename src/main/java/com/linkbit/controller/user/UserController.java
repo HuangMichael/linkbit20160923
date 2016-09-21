@@ -6,35 +6,63 @@ package com.linkbit.controller.user;
 
 import com.linkbit.domain.user.User;
 import com.linkbit.service.user.UserService;
-import com.linkbit.service.user.UserServiceImpl;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
 
+    Logger logger = Logger.getLogger("log");
+
     @Autowired
     UserService userService;
 
-    @RequestMapping("/list")
-    @ResponseBody
+    @RequestMapping("/")
     public String home() {
 
-        return "Hello World!";
+        return "/index.html";
+    }
+
+
+    @RequestMapping("/create")
+    public String create() {
+
+        return "/create.html";
+    }
+
+
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @ResponseBody
+    public User save(@RequestParam("userName") String userName) {
+
+        User user =  new User();
+        user.setUserName(userName);
+        user.setPassword("123456");
+        user.setStatus("1");
+        logger.info("保存用户-------");
+        return userService.save(user);
     }
 
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     @ResponseBody
     public List<User> findAll() {
+        logger.info("查询用户-------");
         return userService.findAll();
+    }
+
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean delete(@PathVariable("id") Long id) {
+        logger.info("删除用户---" + id);
+        return userService.delete(id);
     }
 
 }
